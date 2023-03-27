@@ -12,10 +12,10 @@ class Gui_Control:
         #параметры размеров окон программы
         self.winsize = 800
         self.roulette_cnv_size = 400
-        
-
-        
         #параметры цвета ячеек
+        '''
+        Можно вынести в config.ini
+        '''
         self.cell_colors={
             "common":"#8a908a",
             "rare":"#346bcd",
@@ -40,7 +40,7 @@ class Gui_Control:
         #инициализация основого окна и основного canvas
         self.Window_Controller = main_window #объект главного окна был передан в эту переменную, это нужно чтобы вернуться на мейн окно позже
         self.window = self.Window_Controller.window
-        
+        #канвас рулетки
         self.cnv_roulette=Canvas(width = self.roulette_cnv_size,height = self.roulette_cnv_size,bg="#000000") 
 
 
@@ -104,15 +104,16 @@ class Gui_Control:
                     self.move_cell_to_top(cell) 
             self.move_cells()  
             time.sleep(0.02)
-            self.change_coords_in_list()
+            #self.change_coords_in_list()
             #постепенно уменьшаем скорость всех ячеек
             if time.time()>=start_roulette_time+self.time_gap_to_reduce:
                 start_roulette_time+=1
                 velocity = self.slow_down_roulette(velocity)
-                print("THIS IS VELOCITY",velocity)
+                #print("THIS IS VELOCITY",velocity)
             self.window.update()
-            print("........................................")
+            #print("........................................")
         #если линия совпадает с границей ячейки, то прокрутить рулетку на несколько пунктов вниз
+        #time.sleep(0.99)
         self.resolve_draw_situation()
         self.window.update()
         #выводим результат ролла на экран
@@ -122,11 +123,18 @@ class Gui_Control:
     
     def resolve_draw_situation(self):
         coord_of_choice_line = self.cnv_roulette.coords(self.choice_line)
-        if any(abs(self.cnv_roulette.coords(el)[1]-coord_of_choice_line[1])<=4 for el in self.cnv_roulette.find_all()):
+        
+        #troubleshoot
+        print(f"This is choice line y coord {coord_of_choice_line[1]}")
+        for el in self.cnv_roulette.find_all():
+            if self.cnv_roulette.itemcget(el,"tags")!="choice_line":
+                print(f"This is cell y coord {self.cnv_roulette.coords(el)[1]}. Potential DRAW:{abs(self.cnv_roulette.coords(el)[1]-coord_of_choice_line[1])}")
+
+        if any(abs(self.cnv_roulette.coords(el)[1]-coord_of_choice_line[1])<=4 and self.cnv_roulette.itemcget(el,"tags")!="choice_line" and self.cnv_roulette.itemcget(el,"tags")!="text_block"  for el in self.cnv_roulette.find_all()):
             print("DRAW")
             for el in self.cnv_roulette.find_all():
                 if self.cnv_roulette.itemcget(el,"tags")!="choice_line":
-                    self.cnv_roulette.move(el,0,10)
+                    self.cnv_roulette.move(el,0,5)
     
     def create_game_cells(self,num_of_game_blocks,start_velocity):
         '''
@@ -155,14 +163,14 @@ class Gui_Control:
         '''
         for cell in self.game_cells_list:
             cell.move()
-        
+    '''
     def change_coords_in_list(self):
         """
             меняет в объектах клеток координаты, вроде бы как лишний метод
         """
         for cell in self.game_cells_list:
             cell.change_current_coords()
-            
+    '''        
     
     def slow_down_roulette(self,velocity):
         '''
@@ -181,7 +189,7 @@ class Gui_Control:
             и назначение ей новой игры и цвета
         '''
         first_cell = self.get_first_visible_cell()#клетка которая сейчас находится наверху
-        print("this is obj of first cell",first_cell)
+        #print("this is obj of first cell",first_cell)
         coordinates_first_cell = self.cnv_roulette.coords(first_cell.rectangle_block) #получаем координаты клетки, которая наверху
         coordinates_first_cell = [coordinates_first_cell[0],coordinates_first_cell[1]-self.gm_cont.get_cell_height(),coordinates_first_cell[2],coordinates_first_cell[3]-self.gm_cont.get_cell_height()]
         #print("THIS IS FIRST CELL COORDS",coordinates_first_cell)
@@ -203,11 +211,12 @@ class Gui_Control:
         return min_cell 
         
     #отображение итога ролла
+    '''
     def get_all_cells_coords(self):
         print("this is cells coords")
         for cell in game_cells_list:
             print(cell.get_coords())
-    
+    '''
     def get_result_of_roll(self):
         """
             получение результата ролла на основании ячеек

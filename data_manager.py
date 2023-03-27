@@ -69,15 +69,15 @@ class Data_Manager:
         """
         метод для формирования одной ячейки во время ролла
         """
-        print(list(self.drop_chances.keys()))
-        print(sum(list(self.drop_chances.values())))
+        #print(list(self.drop_chances.keys()))
+        #print(sum(list(self.drop_chances.values())))
         rarity_choice = choice(list(self.current_game_chances.keys()),1,replace=False,p=list(self.current_game_chances.values()))
-        print(len(self.games_dict))
-        print(rarity_choice,"this is rarity choice")
+        #print(len(self.games_dict))
+        #print(rarity_choice,"this is rarity choice")
         games_by_rarity=[game_name for game_name,rarity in self.games_dict.items() if rarity==rarity_choice[0]]
         #print(games_by_rarity)
         game_choice = choice(games_by_rarity,1)
-        print(game_choice,"this is game choice")
+        #print(game_choice,"this is game choice")
         return {"game_name":game_choice[0],"game_rarity":rarity_choice[0]}
     
     
